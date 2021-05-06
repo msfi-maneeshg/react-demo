@@ -89,13 +89,12 @@ class Registration extends React.Component{
                 if(response.status === 200){
                     this.setState({ isStatusOK: true })
                 }else {
-                    console.log("SOMETHING WENT WRONG")
                     this.setState({ isStatusOK: false })
                 }  
                 return data   
             })
             .then((data) => {
-                console.log(data)
+                // console.log(data)
                 if (this.state.isStatusOK){
                     this.setState({ postId: data.content })
                 }else{
@@ -110,7 +109,8 @@ class Registration extends React.Component{
     render(){
         return(
             <>
-                <h1>Registration Page (<label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.postId}</label>)</h1>
+                <h1>-:Registration Page :-</h1>
+                <label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.postId}</label>
                 <div>
                     <form onSubmit={(e) => this.submitRegistrationDetail(e) }>
                         <table>

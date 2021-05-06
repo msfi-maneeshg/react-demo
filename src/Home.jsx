@@ -1,6 +1,7 @@
 import React from 'react'
 import Login from './Login';
 import Registration from './Registration';
+import UserList from './UserList';
 
 class Home extends React.Component{
 
@@ -18,6 +19,7 @@ class Home extends React.Component{
             <>
                 <button onClick={() => this.changePage('login')}>Login</button>
                 <button onClick={() => this.changePage('register')}>Register</button>
+                <button onClick={() => this.changePage('list')}>UserList</button>
             </>
         );
         let header = (
@@ -35,6 +37,13 @@ class Home extends React.Component{
                 <>
                     {header}
                     <Registration />
+                </>
+            );
+        }else if (this.state.pageID.toString() === "list"){
+            return (
+                <>
+                    {header}
+                    <UserList />
                 </>
             );
         }

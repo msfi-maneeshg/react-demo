@@ -25,6 +25,7 @@ class Registration extends React.Component{
     }
 
     setFormValue(e){
+        
         let fName = e.target.name.toString();
         let inputFieldComponent = {
             value :e.target.value,
@@ -54,12 +55,12 @@ class Registration extends React.Component{
         if(!this.state.email.value){
             this.setState({email:{value:this.state.email.value,isValid:false,errorMessage:'Email Address can not be empty'}});
         }else{
-        var emailPattern = new RegExp(/^[a-zA-Z0-9+_.-]+[@]+[a-zA-Z0-9.-]+[.]+[a-zA-Z0-9.-]+$/i);
+            var emailPattern = new RegExp(/^[a-zA-Z0-9+_.-]+[@]+[a-zA-Z0-9.-]+[.]+[a-zA-Z0-9.-]+$/i);
 
-        if (!emailPattern.test(this.state.email.value)) {
-            this.setState({email:{value:this.state.email.value,isValid:false,errorMessage:'Please enter valid email address.'}});
+            if (!emailPattern.test(this.state.email.value)) {
+                this.setState({email:{value:this.state.email.value,isValid:false,errorMessage:'Please enter valid email address.'}});
+            }
         }
-    }
 
         //-------- Phone validation
         if(!this.state.phone.value){
@@ -68,14 +69,48 @@ class Registration extends React.Component{
 
         //-------- Password validation
         if(!this.state.password.value){
-            this.setState({password:{value:this.state.name.value,isValid:false,errorMessage:'Password can not be empty'}});
+            this.setState({password:{value:this.state.password.value,isValid:false,errorMessage:'Password can not be empty'}});
         }
+
+        //-------- sending post request for data submission
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' },
+            body: JSON.stringify({ 
+                name:  this.state.name.value,
+                email:  this.state.email.value,
+                phone:  this.state.phone.value,
+                password:  this.state.password.value
+            })
+        };
+        fetch('http://localhost:8000/registration', requestOptions)
+            .then((response) => {
+                const data = response.json()
+                if(response.status === 200){
+                    this.setState({ isStatusOK: true })
+                }else {
+                    console.log("SOMETHING WENT WRONG")
+                    this.setState({ isStatusOK: false })
+                }  
+                return data   
+            })
+            .then((data) => {
+                console.log(data)
+                if (this.state.isStatusOK){
+                    this.setState({ postId: data.content })
+                }else{
+                    this.setState({ postId: data.error })
+                }
+                
+            });
+
+
         e.preventDefault();
     }
     render(){
         return(
             <>
-                <h1>Registration Page</h1>
+                <h1>Registration Page (<label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.postId}</label>)</h1>
                 <div>
                     <form onSubmit={(e) => this.submitRegistrationDetail(e) }>
                         <table>

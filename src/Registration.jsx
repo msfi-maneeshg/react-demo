@@ -46,63 +46,70 @@ class Registration extends React.Component{
     }
 
     submitRegistrationDetail(e){
+        let validation = true
         //-------- Name validation
         if(!this.state.name.value){
             this.setState({name:{value:this.state.name.value,isValid:false,errorMessage:'Full Name can not be empty'}});
+            validation = false
         }
 
         //-------- Email validation
         if(!this.state.email.value){
             this.setState({email:{value:this.state.email.value,isValid:false,errorMessage:'Email Address can not be empty'}});
+            validation = false
         }else{
             var emailPattern = new RegExp(/^[a-zA-Z0-9+_.-]+[@]+[a-zA-Z0-9.-]+[.]+[a-zA-Z0-9.-]+$/i);
 
             if (!emailPattern.test(this.state.email.value)) {
                 this.setState({email:{value:this.state.email.value,isValid:false,errorMessage:'Please enter valid email address.'}});
+                validation = false
             }
         }
 
         //-------- Phone validation
         if(!this.state.phone.value){
             this.setState({phone:{value:this.state.phone.value,isValid:false,errorMessage:'Phone Number can not be empty'}});
+            validation = false
         }
 
         //-------- Password validation
         if(!this.state.password.value){
             this.setState({password:{value:this.state.password.value,isValid:false,errorMessage:'Password can not be empty'}});
+            validation = false
         }
 
         //-------- sending post request for data submission
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' },
-            body: JSON.stringify({ 
-                name:  this.state.name.value,
-                email:  this.state.email.value,
-                phone:  this.state.phone.value,
-                password:  this.state.password.value
-            })
-        };
-        fetch('http://localhost:8000/registration', requestOptions)
-            .then((response) => {
-                const data = response.json()
-                if(response.status === 200){
-                    this.setState({ isStatusOK: true })
-                }else {
-                    this.setState({ isStatusOK: false })
-                }  
-                return data   
-            })
-            .then((data) => {
-                // console.log(data)
-                if (this.state.isStatusOK){
-                    this.setState({ postId: data.content })
-                }else{
-                    this.setState({ postId: data.error })
-                }
-                
-            });
-
+        if(validation){
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' },
+                body: JSON.stringify({ 
+                    name:  this.state.name.value,
+                    email:  this.state.email.value,
+                    phone:  this.state.phone.value,
+                    password:  this.state.password.value
+                })
+            };
+            fetch('http://localhost:8000/registration', requestOptions)
+                .then((response) => {
+                    const data = response.json()
+                    if(response.status === 200){
+                        this.setState({ isStatusOK: true })
+                    }else {
+                        this.setState({ isStatusOK: false })
+                    }  
+                    return data   
+                })
+                .then((data) => {
+                    // console.log(data)
+                    if (this.state.isStatusOK){
+                        this.setState({ responseData: data.content })
+                    }else{
+                        this.setState({ responseData: data.error })
+                    }
+                    
+                });
+            }
 
         e.preventDefault();
     }
@@ -110,7 +117,7 @@ class Registration extends React.Component{
         return(
             <>
                 <h1>-:Registration Page :-</h1>
-                <label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.postId}</label>
+                <label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.responseData}</label>
                 <div>
                     <form onSubmit={(e) => this.submitRegistrationDetail(e) }>
                         <table>

@@ -15,6 +15,7 @@ class Login extends React.Component{
         }
     }
     setFormValue(e){
+        this.setState({isSubmit:false})
         let inputFieldComponent = {
             value :e.target.value,
             isValid : true,
@@ -101,7 +102,7 @@ class Login extends React.Component{
     render(){
         if(this.state.isLogin){
             return(
-                <UserDashboard userData={this.state.responseData} onClick={() => this.logoutUser()} />
+                <UserDashboard userData={this.state.responseData} onClick={() => this.props.onClick()} />
             );
         }else{
             return(

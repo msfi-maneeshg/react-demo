@@ -29,7 +29,7 @@ class Home extends React.Component{
             return (
                 <>
                     {header}
-                    <Login />
+                    <Login onClick={() => this.changePage('home')}/>
                 </>
             );
         }else if (this.state.pageID.toString() === "register"){

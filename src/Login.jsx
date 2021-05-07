@@ -1,4 +1,5 @@
 import React from 'react'
+import {Form,Button,Alert   } from 'react-bootstrap';
 
 class Login extends React.Component{
     constructor(props){
@@ -11,7 +12,8 @@ class Login extends React.Component{
         this.state = {
             email : inputFieldComponent,
             password:inputFieldComponent,
-            isLogin : false
+            isLogin : false,
+            isShowAlertMessage:false
         }
     }
     setFormValue(e){
@@ -75,7 +77,7 @@ class Login extends React.Component{
                     if (this.state.isStatusOK){
                         this.setState({ responseData: data.content,isLogin:true })
                     }else{
-                        this.setState({ responseData: data.error,isLogin:false })
+                        this.setState({ responseData: data.error,isLogin:false,isShowAlertMessage :true })
                     }
                     
                 });
@@ -99,7 +101,11 @@ class Login extends React.Component{
 
     }
 
+    closeAlertMessage(){
+        this.setState({isShowAlertMessage :false})
+    }
     render(){
+        
         if(this.state.isLogin){
             return(
                 <UserDashboard userData={this.state.responseData} onClick={() => this.props.onClick()} />
@@ -108,26 +114,21 @@ class Login extends React.Component{
             return(
                 <>
                     <h1>Login Page</h1>
-                   {this.state.isSubmit?(<label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.responseData}</label>):''}
-                    <form onSubmit={(e) => this.submitLoginDetails(e)}>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>Email ID:</td>
-                                    <td><input type="text" value={this.state.email.value} name="email" onChange={(e)=> this.setFormValue(e)} /></td>
-                                    <td><ValidationError filedInfo={this.state.email}/></td>
-                                </tr>
-                                <tr>
-                                    <td>Password:</td> 
-                                    <td><input type="password" value={this.state.password.value} name="password" onChange={(e)=> this.setFormValue(e)} /></td>
-                                    <td><ValidationError filedInfo={this.state.password}/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" value="Login" /></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
+                    <Alert show={this.state.isShowAlertMessage} variant='danger' onClose={() => this.closeAlertMessage()}  dismissible>{this.state.responseData}</Alert>
+                    <Form onSubmit={(e) => this.submitLoginDetails(e)}>
+                        <Form.Group controlId="email">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control type="email" value={this.state.email.value} name="email" onChange={(e)=> this.setFormValue(e)} placeholder="Enter email" />
+                            <Form.Text><ValidationError filedInfo={this.state.email}/></Form.Text>
+                        </Form.Group>
+
+                        <Form.Group controlId="password">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control type="password" value={this.state.password.value} name="password" onChange={(e)=> this.setFormValue(e)} placeholder="Password" />
+                            <Form.Text><ValidationError filedInfo={this.state.password}/></Form.Text>
+                        </Form.Group>
+                        <Button variant="primary" type="submit">Login</Button>
+                    </Form>
                 </>
             );
         }

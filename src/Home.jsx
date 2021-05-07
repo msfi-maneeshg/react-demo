@@ -2,6 +2,7 @@ import React from 'react'
 import Login from './Login';
 import Registration from './Registration';
 import UserList from './UserList';
+import { Container,Row,Col,ListGroup   } from 'react-bootstrap';
 
 class Home extends React.Component{
 
@@ -15,39 +16,63 @@ class Home extends React.Component{
     }
 
     render(){
+        let headerMenu = (<>
+                        <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')}>Login</ListGroup.Item>
+                        <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
+                        <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
+                        </>);
+        if(this.state.pageID.toString() === "login"){
+            headerMenu = (<>
+                <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>
+                <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
+                <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
+                </>);
+        }else if(this.state.pageID.toString() === "list"){
+            headerMenu = (<>
+                <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>
+                <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')}>Login</ListGroup.Item>
+                <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
+                </>);
+        }else if(this.state.pageID.toString() === "register"){
+            headerMenu = (<>
+                <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>
+                <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')}>Login</ListGroup.Item>
+                <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
+                </>);
+        }                  
+
         let homePage = (
-            <>
-                <button onClick={() => this.changePage('login')}>Login</button>
-                <button onClick={() => this.changePage('register')}>Register</button>
-                <button onClick={() => this.changePage('list')}>UserList</button>
-            </>
+            
+                <Row>
+                    <Col>
+                        <ListGroup horizontal>
+                            {headerMenu}
+                        </ListGroup>
+                    </Col> 
+                </Row>
+            
         );
-        let header = (
-            <button onClick={() => this.changePage('home')}>Home</button>
+        let bodyContainer = (
+            <div>
+                <h1>Home Page</h1>
+            </div>
         );
+        
         if (this.state.pageID.toString() === "login"){
-            return (
-                <>
-                    {header}
-                    <Login onClick={() => this.changePage('home')}/>
-                </>
-            );
+            bodyContainer = <Login onClick={() => this.changePage('home')}/>;
         }else if (this.state.pageID.toString() === "register"){
-            return (
-                <>
-                    {header}
-                    <Registration />
-                </>
-            );
+            bodyContainer = <Registration />;
         }else if (this.state.pageID.toString() === "list"){
-            return (
-                <>
-                    {header}
-                    <UserList />
-                </>
-            );
+            bodyContainer = <UserList />;
         }
-        return homePage;
+        return (
+            <Container>
+                {homePage}
+                <Row>
+                    {bodyContainer}
+                </Row>
+            </Container> 
+            );
     }
 }
 

@@ -1,7 +1,9 @@
 import React from 'react'
 import {Form,Button,Alert   } from 'react-bootstrap';
+import {useSelector,useDispatch} from 'react-redux';
+import {callLogout} from './store/reducers';
 
-class Login extends React.Component{
+class LoginPage extends React.Component{
     constructor(props){
         super(props)
         let inputFieldComponent = {
@@ -9,13 +11,14 @@ class Login extends React.Component{
             isValid : true,
             errorMessage : ""
         }
+        
         this.state = {
             email : inputFieldComponent,
             password:inputFieldComponent,
-            isLogin : false,
             isShowAlertMessage:false
         }
     }
+
     setFormValue(e){
         this.setState({isSubmit:false})
         let inputFieldComponent = {
@@ -105,48 +108,52 @@ class Login extends React.Component{
         this.setState({isShowAlertMessage :false})
     }
     render(){
-        
-        if(this.state.isLogin){
-            return(
-                <UserDashboard userData={this.state.responseData} onClick={() => this.props.onClick()} />
-            );
-        }else{
-            return(
-                <>
-                    <h1>Login Page</h1>
-                    <Alert show={this.state.isShowAlertMessage} variant='danger' onClose={() => this.closeAlertMessage()}  dismissible>{this.state.responseData}</Alert>
-                    <Form onSubmit={(e) => this.submitLoginDetails(e)}>
-                        <Form.Group controlId="email">
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control type="email" value={this.state.email.value} name="email" onChange={(e)=> this.setFormValue(e)} placeholder="Enter email" />
-                            <Form.Text><ValidationError filedInfo={this.state.email}/></Form.Text>
-                        </Form.Group>
+        return(
+            <>
+                <h1>Login Page</h1>
+                <Alert show={this.state.isShowAlertMessage} variant='danger' onClose={() => this.closeAlertMessage()}  dismissible>{this.state.responseData}</Alert>
+                <Form onSubmit={(e) => this.submitLoginDetails(e)}>
+                    <Form.Group controlId="email">
+                        <Form.Label>Email address</Form.Label>
+                        <Form.Control type="email" value={this.state.email.value} name="email" onChange={(e)=> this.setFormValue(e)} placeholder="Enter email" />
+                        <Form.Text><ValidationError filedInfo={this.state.email}/></Form.Text>
+                    </Form.Group>
 
-                        <Form.Group controlId="password">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" value={this.state.password.value} name="password" onChange={(e)=> this.setFormValue(e)} placeholder="Password" />
-                            <Form.Text><ValidationError filedInfo={this.state.password}/></Form.Text>
-                        </Form.Group>
-                        <Button variant="primary" type="submit">Login</Button>
-                    </Form>
-                </>
-            );
-        }
+                    <Form.Group controlId="password">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control type="password" value={this.state.password.value} name="password" onChange={(e)=> this.setFormValue(e)} placeholder="Password" />
+                        <Form.Text><ValidationError filedInfo={this.state.password}/></Form.Text>
+                    </Form.Group>
+                    <Button variant="primary" type="submit">Login</Button>
+                </Form>
+            </>
+        );
     }
 }
 
-
+function Login() {
+    const loginStatus = useSelector((state) => state.changeLoginStatus);
+    console.log(loginStatus);
+    if(loginStatus){   
+    return <UserDashboard />;
+    }
+    return <LoginPage />;
+}
 
 function UserDashboard(props){
+    const dispatch = useDispatch();
      return(
         <>
-            <h1>Welcome, {props.userData.name}</h1>
-           <button onClick={props.onClick}>Logout</button>
+            <h1>Welcome,</h1>
+           <button onClick={() => dispatch(callLogout())}>Logout</button>
         </>
     );
 }
 
+function LogoutUser(){
+    
 
+}
 function ValidationError(props){
     if (!props.filedInfo.isValid){
         return(

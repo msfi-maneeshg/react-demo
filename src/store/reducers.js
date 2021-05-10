@@ -1,17 +1,34 @@
 import {combineReducers} from 'redux'
-let isLoggedin = true;
-export const changeLoginStatus = (state = isLoggedin,action) => {
-    if(action.type == "login"){
-        return true;
-    }else if (action.type == "logout"){
-        return false;
+let userInformation = {
+    name:"",
+    email:"",
+    phone:"",
+    isLogin:false
+};
+
+//-----------login logout reducers
+export const checkUserLogin = (state = userInformation,action) => {
+     if(action.type === "login"){
+        userInformation.name = action.payload.name;
+        userInformation.email = action.payload.email;
+        userInformation.phone = action.payload.phone;
+        userInformation.isLogin = true;
+        
+        return userInformation;
+    }else if (action.type === "logout"){
+        userInformation.name = "";
+        userInformation.email ="";
+        userInformation.phone ="";
+        userInformation.isLogin = false;
+        return userInformation;
     }
     return state;
 }
 
-export const CallLogin = () => {
+export const callLogin = (userData) => {
     return{
-        type:"login"
+        type:"login",
+        payload:userData,
     }
 }
 export const callLogout = () => {
@@ -21,6 +38,6 @@ export const callLogout = () => {
 }
 
 export const rootReducer = combineReducers({
-    changeLoginStatus
+    checkUserLogin,
 });
 export default rootReducer;

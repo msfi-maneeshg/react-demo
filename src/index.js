@@ -3,14 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import Home from './Home';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import reportWebVitals from './reportWebVitals';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
+store.subscribe(getWelcomeMessage);
 function getWelcomeMessage(){
-  // const user = {fName:"Maneesh",lName:"Goyal"}
   ReactDOM.render(
       <Provider store={store}>
-        <Home user={{fName:"Maneesh",lName:"Goyal"}}/>
+        <Home/>
       </Provider>,
     document.getElementById('root')
   );

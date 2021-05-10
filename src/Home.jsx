@@ -17,10 +17,10 @@ class Home extends React.Component{
 
     render(){
         let headerMenu = (<>
-                        <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')}>Login</ListGroup.Item>
-                        <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
-                        <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
-                        </>);
+                    <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')} >Login</ListGroup.Item>
+                    <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
+                    <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
+                    </>);
         if(this.state.pageID.toString() === "login"){
             headerMenu = (<>
                 <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>

@@ -1,5 +1,5 @@
 import React from 'react'
-
+import {Form,Button,Alert,Table,Container,Row,Col} from 'react-bootstrap';
 class UserList extends React.Component{
 
     constructor(props){
@@ -40,12 +40,12 @@ class UserList extends React.Component{
         if (this.state.isListLoaded){
             finalOutput = (
                 <div>
-                    <table>
+                    <Table bordered hover>
                         <thead>
                             <tr>
-                                <th>NAME</th>
-                                <th>EMAIL</th>
-                                <th>PHONE</th>
+                                <th>Full Name</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,7 +57,7 @@ class UserList extends React.Component{
                                 </tr>
                             ))}
                         </tbody>
-                    </table>
+                    </Table>
                 </div>
             )
         }else if(this.state.isStatusOK) {

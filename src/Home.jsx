@@ -16,7 +16,15 @@ class Home extends React.Component{
         this.setState({pageID:id});
     }
 
+    checkPageID(currentID){
+        const pageID =  this.state.pageID.toString();
+        if (currentID === pageID){
+            return "Disabled";
+        }
+        return null;
+    }
     render(){
+        const pageID =  this.state.pageID.toString();
         const isLoggin = store.getState().checkUserLogin.isLogin;
         let headerMenu = (
             <>
@@ -45,7 +53,7 @@ class Home extends React.Component{
         );
         let bodyContainer;
         
-        switch(this.state.pageID.toString()){
+        switch(pageID){
             case "register":
                 bodyContainer = <Registration />;
                 break;

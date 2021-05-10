@@ -1,4 +1,5 @@
 import React from 'react'
+import {Form,Button,Alert,Table,Container,Row,Col} from 'react-bootstrap';
 
 class Registration extends React.Component{
 
@@ -13,7 +14,8 @@ class Registration extends React.Component{
             name : inputFieldComponent,
             email : inputFieldComponent,
             phone : inputFieldComponent,
-            password : inputFieldComponent
+            password : inputFieldComponent,
+            isShowAlertMessage:false
         }
     }
 
@@ -70,6 +72,9 @@ class Registration extends React.Component{
         if(!this.state.phone.value){
             this.setState({phone:{value:this.state.phone.value,isValid:false,errorMessage:'Phone Number can not be empty'}});
             validation = false
+        }else if(this.state.phone.value.length != 10){
+            this.setState({phone:{value:this.state.phone.value,isValid:false,errorMessage:'Invalid Phone Number'}});
+            validation = false
         }
 
         //-------- Password validation
@@ -107,48 +112,65 @@ class Registration extends React.Component{
                     }else{
                         this.setState({ responseData: data.error })
                     }
+                    this.setState({isShowAlertMessage:true})
                     
                 });
             }
 
         e.preventDefault();
     }
+    setIsShowAlertMessage(status){
+        this.setState({isShowAlertMessage:status})
+    }
     render(){
         
         return(
             <>
-                <h1>-:Registration Page :-</h1>
-                <label style={{color:(this.state.isStatusOK?"green":"red")}}>{this.state.responseData}</label>
+                <h1>User Registration</h1>
+                <Alert show={this.state.isShowAlertMessage} variant={this.state.isStatusOK?"success":"danger"} onClose={() => this.setIsShowAlertMessage(false)}  dismissible>{this.state.responseData}</Alert>
                 <div>
-                    <form onSubmit={(e) => this.submitRegistrationDetail(e) }>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td><label>Full Name:</label></td>
-                                    <td><input type="text" name="name" value={this.state.name.value} onChange={(e) => this.setFormValue(e)}/></td>
-                                    <td><ValidationError filedInfo={this.state.name}/></td>
-                                </tr>
-                                <tr>
-                                    <td><label>Email Address:</label></td>
-                                    <td><input type="text" name="email" value={this.state.email.value} onChange={(e) => this.setFormValue(e)}/></td>
-                                    <td><ValidationError filedInfo={this.state.email}/></td>
-                                </tr>
-                                <tr>
-                                    <td><label>Phone Number:</label></td>
-                                    <td><input type="text" name="phone" value={this.state.phone.value} onChange={(e) => this.setFormValue(e)} onKeyDown={(e)=>this.checkValueType(e)}/></td>
-                                    <td><ValidationError filedInfo={this.state.phone}/></td>
-                                </tr>
-                                <tr>
-                                    <td><label>Password:</label></td>
-                                    <td><input type="password" name="password" value={this.state.password.value} onChange={(e) => this.setFormValue(e)}/></td>
-                                    <td><ValidationError filedInfo={this.state.password}/></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" value="Submit Details"/></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </form>
+                    <Form onSubmit={(e) => this.submitRegistrationDetail(e) }>
+                        <Form.Row>
+                            <Form.Group as={Col} xs={3} controlId="fullName-label">
+                                <Form.Label>Full Name:</Form.Label>
+                            </Form.Group>
+                            <Form.Group as={Col} xs={5} controlId="fullName-input">
+                                <Form.Control type="text" name="name" placeholder="Enter Full Name" value={this.state.name.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.name.isValid?"":"red")}}/>
+                                <Form.Text><ValidationError filedInfo={this.state.name}/></Form.Text>
+                            </Form.Group>
+                        </Form.Row>
+
+                        <Form.Row>
+                            <Form.Group as={Col} xs={3} controlId="email-label">
+                                <Form.Label>Email Address:</Form.Label>
+                            </Form.Group>   
+                            <Form.Group as={Col} xs={5} controlId="email-input"> 
+                                <Form.Control type="text" name="email"  placeholder="Enter Email Address" value={this.state.email.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.email.isValid?"":"red")}}/>
+                                <Form.Text><ValidationError filedInfo={this.state.email}/></Form.Text>
+                            </Form.Group>   
+                        </Form.Row>
+                        
+                        <Form.Row>
+                            <Form.Group as={Col} xs={3} controlId="phone-label">
+                                <Form.Label>Phone Number:</Form.Label>
+                            </Form.Group>   
+                            <Form.Group as={Col} xs={5} controlId="phone-input"> 
+                                <Form.Control type="text" name="phone"  placeholder="Enter Phone Number" value={this.state.phone.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.phone.isValid?"":"red")}} />
+                                <Form.Text><ValidationError filedInfo={this.state.phone}/></Form.Text>
+                            </Form.Group>
+                        </Form.Row>
+
+                        <Form.Row>
+                            <Form.Group as={Col} xs={3} controlId="password-label">
+                                <Form.Label>Password:</Form.Label>
+                            </Form.Group>   
+                            <Form.Group as={Col} xs={5} controlId="password-input"> 
+                                <Form.Control type="password" name="password"  placeholder="Enter Password" value={this.state.password.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.password.isValid?"":"red")}} />
+                                <Form.Text><ValidationError filedInfo={this.state.password}/></Form.Text>
+                            </Form.Group>   
+                        </Form.Row>
+                        <Button variant="primary" type="submit">Submit</Button>
+                    </Form>
                 </div>
             </>
         );
@@ -159,7 +181,7 @@ class Registration extends React.Component{
 function ValidationError(props){
     if (!props.filedInfo.isValid){
         return(
-            <label style={{color:'red'}}>*{props.filedInfo.errorMessage}*</label>
+            <span style={{color:'red'}}>{props.filedInfo.errorMessage}</span >
         );
     }
     return null;

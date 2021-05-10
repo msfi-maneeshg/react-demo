@@ -16,6 +16,7 @@ class Registration extends React.Component{
             password : inputFieldComponent
         }
     }
+
     checkValueType(e){
         var numberPattern = new RegExp(/^[0-9]+$/i);
 
@@ -25,7 +26,6 @@ class Registration extends React.Component{
     }
 
     setFormValue(e){
-        
         let fName = e.target.name.toString();
         let inputFieldComponent = {
             value :e.target.value,

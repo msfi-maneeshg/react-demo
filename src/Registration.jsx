@@ -114,6 +114,7 @@ class Registration extends React.Component{
         e.preventDefault();
     }
     render(){
+        
         return(
             <>
                 <h1>-:Registration Page :-</h1>

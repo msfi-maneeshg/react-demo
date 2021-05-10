@@ -2,6 +2,7 @@ import React from 'react'
 import Login from './Login';
 import Registration from './Registration';
 import UserList from './UserList';
+import { store } from './store/store';
 import { Container,Row,Col,ListGroup   } from 'react-bootstrap';
 
 class Home extends React.Component{
@@ -16,55 +17,46 @@ class Home extends React.Component{
     }
 
     render(){
-        let headerMenu = (<>
-                    <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')} >Login</ListGroup.Item>
-                    <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
-                    <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
-                    </>);
-        if(this.state.pageID.toString() === "login"){
-            headerMenu = (<>
-                <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>
+        const isLoggin = store.getState().checkUserLogin.isLogin;
+        let headerMenu = (
+            <>
+                <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')} >Login</ListGroup.Item>
                 <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
-                <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
-                </>);
-        }else if(this.state.pageID.toString() === "list"){
-            headerMenu = (<>
-                <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>
-                <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')}>Login</ListGroup.Item>
-                <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
-                </>);
-        }else if(this.state.pageID.toString() === "register"){
-            headerMenu = (<>
-                <ListGroup.Item action variant="info"  onClick={() => this.changePage('home')}>Home</ListGroup.Item>
-                <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')}>Login</ListGroup.Item>
-                <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>UserList</ListGroup.Item>
-                </>);
-        }                  
+            </>
+        );
 
-        let homePage = (
-            
-                <Row>
-                    <Col>
-                        <ListGroup horizontal>
-                            {headerMenu}
-                        </ListGroup>
-                    </Col> 
-                </Row>
-            
-        );
-        let bodyContainer = (
-            <div>
-                <h1>Home Page</h1>
-            </div>
-        );
+        if(isLoggin){
+            headerMenu = (
+                <>
+                    <ListGroup.Item action variant="info"  onClick={() => this.changePage('dashboard')} >Dashboard</ListGroup.Item>
+                    <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>Users List</ListGroup.Item>
+                </>
+            );
+        }     
         
-        if (this.state.pageID.toString() === "login"){
-            bodyContainer = <Login onClick={() => this.changePage('home')}/>;
-        }else if (this.state.pageID.toString() === "register"){
-            bodyContainer = <Registration />;
-        }else if (this.state.pageID.toString() === "list"){
-            bodyContainer = <UserList />;
-        }
+        let homePage = (
+            <Row>
+                <Col>
+                    <ListGroup horizontal>
+                        {headerMenu}
+                    </ListGroup>
+                </Col> 
+            </Row>
+        );
+        let bodyContainer;
+        
+        switch(this.state.pageID.toString()){
+            case "register":
+                bodyContainer = <Registration />;
+                break;
+            case "list":
+                bodyContainer = <UserList />;
+                break;
+            default:
+                bodyContainer = <Login/>;
+                break;
+        }    
+
         return (
             <Container>
                 {homePage}

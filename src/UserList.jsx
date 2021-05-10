@@ -50,7 +50,7 @@ class UserList extends React.Component{
                         </thead>
                         <tbody>
                             {this.state.userList.map(userInfo => (
-                                <tr>
+                                <tr key={userInfo.id}>
                                     <td>{userInfo.name}</td>
                                     <td>{userInfo.email}</td>
                                     <td>{userInfo.phone}</td>

@@ -2,6 +2,7 @@ import React from 'react'
 import Login from './Login';
 import Registration from './Registration';
 import UserList from './UserList';
+import {UserProfile} from './user/Home';
 import { store } from './store/store';
 import { Container,Row,Col,ListGroup   } from 'react-bootstrap';
 
@@ -24,7 +25,7 @@ class Home extends React.Component{
         return null;
     }
     render(){
-        const pageID =  this.state.pageID.toString();
+        let pageID =  this.state.pageID.toString();
         const isLoggin = store.getState().checkUserLogin.isLogin;
         let headerMenu = (
             <>
@@ -38,8 +39,11 @@ class Home extends React.Component{
                 <>
                     <ListGroup.Item action variant="info"  onClick={() => this.changePage('dashboard')} >Dashboard</ListGroup.Item>
                     <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>Users List</ListGroup.Item>
+                    <ListGroup.Item action variant="info" onClick={() => this.changePage('my-profile')}>My Profile</ListGroup.Item>
                 </>
             );
+        }else if (pageID != "login"||pageID != "register"){
+            pageID = "login"
         }     
         
         let homePage = (
@@ -51,7 +55,9 @@ class Home extends React.Component{
                 </Col> 
             </Row>
         );
-        let bodyContainer;
+        let bodyContainer = <Login/>;
+
+
         
         switch(pageID){
             case "register":
@@ -60,6 +66,9 @@ class Home extends React.Component{
             case "list":
                 bodyContainer = <UserList />;
                 break;
+            case "my-profile":
+                bodyContainer = <UserProfile />;
+                break;    
             default:
                 bodyContainer = <Login/>;
                 break;

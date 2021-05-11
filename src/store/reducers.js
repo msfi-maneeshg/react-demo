@@ -4,6 +4,7 @@ let userInformation = {
     name:"",
     email:"",
     phone:"",
+    profileImage:"",
     isLogin:false
 };
 
@@ -14,6 +15,7 @@ export const checkUserLogin = (state = userInformation,action) => {
         userInformation.name = action.payload.name;
         userInformation.email = action.payload.email;
         userInformation.phone = action.payload.phone;
+        userInformation.profileImage = action.payload.profileImage;
         userInformation.isLogin = true;
         
         return userInformation;
@@ -22,6 +24,7 @@ export const checkUserLogin = (state = userInformation,action) => {
         userInformation.name = "";
         userInformation.email ="";
         userInformation.phone ="";
+        userInformation.profileImage ="";
         userInformation.isLogin = false;
         return userInformation;
     }

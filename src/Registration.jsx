@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form,Button,Alert,Table,Container,Row,Col} from 'react-bootstrap';
+import {Form,Button,Alert,Col} from 'react-bootstrap';
 
 class Registration extends React.Component{
 
@@ -72,7 +72,7 @@ class Registration extends React.Component{
         if(!this.state.phone.value){
             this.setState({phone:{value:this.state.phone.value,isValid:false,errorMessage:'Phone Number can not be empty'}});
             validation = false
-        }else if(this.state.phone.value.length != 10){
+        }else if(this.state.phone.value.length !== 10){
             this.setState({phone:{value:this.state.phone.value,isValid:false,errorMessage:'Invalid Phone Number'}});
             validation = false
         }

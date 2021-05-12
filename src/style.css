@@ -1,0 +1,15 @@
+.user-list-row{
+    border: 1px gray solid;
+    border-radius: 5px;
+    margin:1px;
+}
+
+.user-list-row:hover{
+    box-shadow: 1px 1px;
+}
+
+.user-list-row > .info > span{
+    float: left;
+    width: 100%;
+}
+

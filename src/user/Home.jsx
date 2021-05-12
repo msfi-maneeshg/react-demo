@@ -1,4 +1,4 @@
-import React,{ useState,useRef }  from 'react'
+import React,{ useState,useRef,useEffect }  from 'react'
 import {Form,Button,Alert,Table,Container,Row,Col,Modal,Card,Image} from 'react-bootstrap';
 import {useSelector,useDispatch} from 'react-redux';
 import {callLogout,callLogin} from '../store/reducers';
@@ -8,14 +8,47 @@ import thumbsUpLogo from '../images/thumbs-up-regular.svg';
 import commentLogo from '../images/comment-regular.svg';
 
 function UserHome(props){
+    let [isListLoaded,setIsListLoaded] = useState(false)
+    let [usersFeed,setUsersFeed] = useState(null)
+
+
+    useEffect(() =>{
+        if(isListLoaded){
+            return
+        }
+        let isStatusOK = false;
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' }
+        };
+        fetch('http://localhost:8000/user-list', requestOptions)
+            .then((response) => {
+                const data = response.json()
+                if(response.status === 200){
+                    isStatusOK = true
+                }  
+                return data   
+            })
+            .then((data) => {
+                if (isStatusOK){
+                    setIsListLoaded(true)
+                    setUsersFeed(data.content)
+                } 
+            });
+    })
+
+    
+
     return(
         <Container>
             <Row className="justify-content-center">
                 <Col xs={10}>
-                    <UserFeed name="Manish"/>
-                    <UserFeed name="Tom"/>
-                    <UserFeed name="Jared"/>
-                    <UserFeed name="Brett"/>
+                    {isListLoaded && usersFeed !== null?<>{
+                            usersFeed.map(feed => (
+                                <UserFeed userInfo={feed}/>
+                            ))  
+                        }</>:"Loading"
+                    }
                 </Col>
             </Row>
         </Container>
@@ -173,16 +206,16 @@ export function UserProfile(props){
 
                             <tr>
                                 <td>Profile Image :</td>
-                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  /></>:<Image width="100" height="100" src={"http://localhost:8000/image/"+userDetails.profileImage} thumbnail />}</td>
+                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  /></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/"+userDetails.profileImage} thumbnail />}</td>
                             </tr>
                         </tbody>
                     </Table>
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs={3}><Button variant="info" block onClick={() => editUserDetails(!isEditable)}>{isEditable ?"Back":"Edit Profile"}</Button></Col>
-                    {isEditable && <Col xs={3}><Button variant="success " block onClick={() => updateUserDetails()}>Submit</Button></Col>}
-                    {!isEditable && <Col xs={3}><Button variant="info " block onClick={() => setShowChangePasswordModal(true)}>Change Password</Button></Col>}
+                    <Col xs={6} md={3}><Button variant="info" block onClick={() => editUserDetails(!isEditable)}>{isEditable ?"Back":"Edit Profile"}</Button></Col>
+                    {isEditable && <Col xs={6} md={3}><Button variant="success " block onClick={() => updateUserDetails()}>Submit</Button></Col>}
+                    {!isEditable && <Col xs={6} md={3}><Button variant="info " block onClick={() => setShowChangePasswordModal(true)}>Change Password</Button></Col>}
                 </Row>
 
                 <ChangePasswordModal userID={userDetails.id} show={showChangePasswordModal} onHide={() => setShowChangePasswordModal(false)}/>
@@ -196,7 +229,7 @@ function ChangePasswordModal(props) {
     let [confirmPassword,setConfirmPassword] = useState({value:"",error:""});
     let [alertMessage,setAlertMessage] = useState({type:"",message:""})
     const changePasswordform = useRef(null)
-     
+       
     let setFormValue = (e) => {
         if (e.target.name === 'password'){
             setPassword({value:e.target.value,error:""});
@@ -313,10 +346,10 @@ function UserFeed(props){
             <Card.Header >
                 <Row>
                     <Col xs={2} md={2} >
-                        <Image width="50" src={"https://i.pravatar.cc/50?"+props.name} roundedCircle />
+                        <Image width="50" src={"http://localhost:8000/image/"+props.userInfo.profileImage} roundedCircle />
                     </Col>
                     <Col xs={6} md={6} >
-                        <h1>{props.name}</h1>
+                        <h1>{props.userInfo.name}</h1>
                     </Col>
                 </Row>
             </Card.Header>
@@ -325,15 +358,15 @@ function UserFeed(props){
                 Some quick example text to build on the card title and make up the bulk of
                 the card's content.
                 </Card.Text>
-                <Card.Img variant="top" height="250" src={"https://picsum.photos/1000/1000?"+props.name} thumbnail />
+                <Card.Img variant="top" height="250" src={"https://picsum.photos/1000/1000?"+props.userInfo.id} thumbnail />
             </Card.Body>
             <Card.Footer>
                 <Row>
                     <Col xs={1} md={1} >
-                        <a href="javascript:void(0);"><img src={thumbsUpLogo} /></a>
+                        <Image alt="" src={thumbsUpLogo} />
                     </Col>
                     <Col xs={1} md={1} >
-                        <a href="javascript:void(0);"><img src={commentLogo} /></a>
+                        <Image  alt="" src={commentLogo} />
                     </Col>
                 </Row>
             </Card.Footer>

@@ -42,7 +42,7 @@ class Home extends React.Component{
                     <ListGroup.Item action variant="info" onClick={() => this.changePage('my-profile')}>My Profile</ListGroup.Item>
                 </>
             );
-        }else if (pageID != "login"||pageID != "register"){
+        }else if (pageID !== "login"||pageID !== "register"){
             pageID = "login"
         }     
         

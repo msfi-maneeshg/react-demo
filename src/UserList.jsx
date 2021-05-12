@@ -1,5 +1,6 @@
 import React from 'react'
-import {Table} from 'react-bootstrap';
+import {Container, Table,Row,Col,Image} from 'react-bootstrap';
+import {} from './style.css';
 class UserList extends React.Component{
 
     constructor(props){
@@ -38,28 +39,7 @@ class UserList extends React.Component{
             <h1>User List</h1>
         ) 
         if (this.state.isListLoaded){
-            finalOutput = (
-                <div>
-                    <Table bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Full Name</th>
-                                <th>Email Address</th>
-                                <th>Phone Number</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.userList.map(userInfo => (
-                                <tr key={userInfo.id}>
-                                    <td>{userInfo.name}</td>
-                                    <td>{userInfo.email}</td>
-                                    <td>{userInfo.phone}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </div>
-            )
+            finalOutput = <UserInfo userList={this.state.userList} />
         }else if(this.state.isStatusOK) {
             finalOutput = (
                 <div>
@@ -80,6 +60,24 @@ class UserList extends React.Component{
         </>)
         
     }
+}
+
+function UserInfo(props) {
+    
+    return(<Container>
+            {props.userList.map(userInfo => (
+                <Row className="user-list-row">
+                    <Col className="profile-image" xs={2} md={2} ><Image width="50" src={"http://localhost:8000/image/"+userInfo.profileImage} thumbnail /></Col>
+                    <Col className="info" xs={6} md={6} >
+                        <span>{userInfo.name}</span>
+                        <span>{userInfo.email}</span>
+                    </Col>
+                    <Col xs={2} md={2}>
+                        <a href={"profile/"+userInfo.id} >View</a>
+                    </Col>
+                </Row>
+            ))}
+    </Container>);
 }
 
 export default UserList

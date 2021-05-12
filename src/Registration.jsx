@@ -135,7 +135,7 @@ class Registration extends React.Component{
                                 <Form.Label>Full Name:</Form.Label>
                             </Form.Group>
                             <Form.Group as={Col} xs={5} controlId="fullName-input">
-                                <Form.Control type="text" name="name" placeholder="Enter Full Name" value={this.state.name.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.name.isValid?"":"red")}}/>
+                                <Form.Control type="text" name="name" placeholder="Enter Full Name" value={this.state.name.value} onChange={(e) => this.setFormValue(e)} style={{borderColor:(this.state.name.isValid?"":"red")}}/>
                                 <Form.Text><ValidationError filedInfo={this.state.name}/></Form.Text>
                             </Form.Group>
                         </Form.Row>
@@ -145,7 +145,7 @@ class Registration extends React.Component{
                                 <Form.Label>Email Address:</Form.Label>
                             </Form.Group>   
                             <Form.Group as={Col} xs={5} controlId="email-input"> 
-                                <Form.Control type="text" name="email"  placeholder="Enter Email Address" value={this.state.email.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.email.isValid?"":"red")}}/>
+                                <Form.Control type="text" name="email"  placeholder="Enter Email Address" value={this.state.email.value} onChange={(e) => this.setFormValue(e)} style={{borderColor:(this.state.email.isValid?"":"red")}}/>
                                 <Form.Text><ValidationError filedInfo={this.state.email}/></Form.Text>
                             </Form.Group>   
                         </Form.Row>
@@ -155,7 +155,7 @@ class Registration extends React.Component{
                                 <Form.Label>Phone Number:</Form.Label>
                             </Form.Group>   
                             <Form.Group as={Col} xs={5} controlId="phone-input"> 
-                                <Form.Control type="text" name="phone"  placeholder="Enter Phone Number" value={this.state.phone.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.phone.isValid?"":"red")}} />
+                                <Form.Control type="text" name="phone"  placeholder="Enter Phone Number" value={this.state.phone.value} onChange={(e) => this.setFormValue(e)} style={{borderColor:(this.state.phone.isValid?"":"red")}} />
                                 <Form.Text><ValidationError filedInfo={this.state.phone}/></Form.Text>
                             </Form.Group>
                         </Form.Row>
@@ -165,7 +165,7 @@ class Registration extends React.Component{
                                 <Form.Label>Password:</Form.Label>
                             </Form.Group>   
                             <Form.Group as={Col} xs={5} controlId="password-input"> 
-                                <Form.Control type="password" name="password"  placeholder="Enter Password" value={this.state.password.value} onChange={(e) => this.setFormValue(e)} style={{'border-color':(this.state.password.isValid?"":"red")}} />
+                                <Form.Control type="password" name="password"  placeholder="Enter Password" value={this.state.password.value} onChange={(e) => this.setFormValue(e)} style={{borderColor:(this.state.password.isValid?"":"red")}} />
                                 <Form.Text><ValidationError filedInfo={this.state.password}/></Form.Text>
                             </Form.Group>   
                         </Form.Row>

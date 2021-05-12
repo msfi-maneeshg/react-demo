@@ -1,10 +1,6 @@
 import {combineReducers} from 'redux'
 let userInformation = {
     id:"",
-    name:"",
-    email:"",
-    phone:"",
-    profileImage:"",
     isLogin:false
 };
 
@@ -12,19 +8,11 @@ let userInformation = {
 export const checkUserLogin = (state = userInformation,action) => {
      if(action.type === "login"){
         userInformation.id = action.payload.id;
-        userInformation.name = action.payload.name;
-        userInformation.email = action.payload.email;
-        userInformation.phone = action.payload.phone;
-        userInformation.profileImage = action.payload.profileImage;
         userInformation.isLogin = true;
         
         return userInformation;
     }else if (action.type === "logout"){
         userInformation.id = "";
-        userInformation.name = "";
-        userInformation.email ="";
-        userInformation.phone ="";
-        userInformation.profileImage ="";
         userInformation.isLogin = false;
         return userInformation;
     }

@@ -1,6 +1,7 @@
 import React from 'react'
-import {Container, Table,Row,Col,Image} from 'react-bootstrap';
+import {Container,Row,Col,Image} from 'react-bootstrap';
 import {} from './style.css';
+import {useHistory} from 'react-router-dom'
 class UserList extends React.Component{
 
     constructor(props){
@@ -33,11 +34,16 @@ class UserList extends React.Component{
             });
     }
 
+   
+
+    
+
     render(){
         let finalOutput;
         let header = (
             <h1>User List</h1>
-        ) 
+        )
+        
         if (this.state.isListLoaded){
             finalOutput = <UserInfo userList={this.state.userList} />
         }else if(this.state.isStatusOK) {
@@ -63,17 +69,20 @@ class UserList extends React.Component{
 }
 
 function UserInfo(props) {
-    
+    let history = useHistory();
+    const viewUserProfile = (userID) => {
+        history.push("profile/"+userID)
+    }
     return(<Container>
             {props.userList.map(userInfo => (
-                <Row className="user-list-row">
+                <Row className="user-list-row" key={userInfo.id}>
                     <Col className="profile-image" xs={2} md={2} ><Image width="50" src={"http://localhost:8000/image/"+userInfo.profileImage} thumbnail /></Col>
                     <Col className="info" xs={6} md={6} >
                         <span>{userInfo.name}</span>
                         <span>{userInfo.email}</span>
                     </Col>
-                    <Col xs={2} md={2}>
-                        <a href={"profile/"+userInfo.id} >View</a>
+                    <Col className="view-profie" xs={4} md={4}>
+                        <span onClick={() => viewUserProfile(userInfo.id)}>view</span>
                     </Col>
                 </Row>
             ))}

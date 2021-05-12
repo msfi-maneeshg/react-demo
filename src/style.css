@@ -1,7 +1,11 @@
 .user-list-row{
-    border: 1px gray solid;
-    border-radius: 5px;
-    margin:1px;
+    padding: .25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 5px;
 }
 
 .user-list-row:hover{
@@ -13,3 +17,10 @@
     width: 100%;
 }
 
+
+.user-list-row > .view-profie >  span{
+    background: gray;
+    border-radius: 15px;
+    padding: 3px 20px;
+    cursor: pointer;
+}

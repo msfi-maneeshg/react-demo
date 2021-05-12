@@ -2,87 +2,70 @@ import React from 'react'
 import Login from './Login';
 import Registration from './Registration';
 import UserList from './UserList';
-import {UserProfile} from './user/Home';
+import {UserHome,UserProfile} from './user/Home';
 import { store } from './store/store';
 import { Container,Row,Col,ListGroup   } from 'react-bootstrap';
-
-class Home extends React.Component{
-
-    constructor(props){
-        super(props);
-        this.state = {pageID : ""};
+import {  Switch,Route,useHistory } from 'react-router-dom'
+function Home (){
+    let history = useHistory();
+    const isLoggin = store.getState().checkUserLogin.isLogin;
+    
+    const changePage = (pagePath) => {
+        history.push("/"+pagePath);
     }
 
-    changePage(id){
-        this.setState({pageID:id});
-    }
+    let headerMenu = (
+        <>
+            <ListGroup.Item action variant="info" onClick={() => changePage("login")}>Login</ListGroup.Item>
+            <ListGroup.Item action variant="info" onClick={() => changePage("register")}>Register</ListGroup.Item>  
+        </>
+    );
 
-    checkPageID(currentID){
-        const pageID =  this.state.pageID.toString();
-        if (currentID === pageID){
-            return "Disabled";
-        }
-        return null;
-    }
-    render(){
-        let pageID =  this.state.pageID.toString();
-        const isLoggin = store.getState().checkUserLogin.isLogin;
-        let headerMenu = (
+   
+
+    if(isLoggin){
+        headerMenu = (
             <>
-                <ListGroup.Item action variant="info"  onClick={() => this.changePage('login')} >Login</ListGroup.Item>
-                <ListGroup.Item action variant="info" onClick={() => this.changePage('register')}>Register</ListGroup.Item>  
+                <ListGroup.Item action variant="info" onClick={() => changePage("dashboard")}>Dashboard</ListGroup.Item>
+                <ListGroup.Item action variant="info" onClick={() => changePage("user-list")}>Users List</ListGroup.Item>
+                <ListGroup.Item action variant="info" onClick={() => changePage("my-profile")}>My Profile</ListGroup.Item>
             </>
         );
+    }    
+    let homePage = (
+        <Row>
+            <Col>
+                <ListGroup horizontal>
+                    {headerMenu}
+                </ListGroup>
+            </Col> 
+        </Row>
+    );
+          
 
-        if(isLoggin){
-            headerMenu = (
-                <>
-                    <ListGroup.Item action variant="info"  onClick={() => this.changePage('dashboard')} >Dashboard</ListGroup.Item>
-                    <ListGroup.Item action variant="info" onClick={() => this.changePage('list')}>Users List</ListGroup.Item>
-                    <ListGroup.Item action variant="info" onClick={() => this.changePage('my-profile')}>My Profile</ListGroup.Item>
-                </>
-            );
-        }else if (pageID !== "login"||pageID !== "register"){
-            pageID = "login"
-        }     
-        
-        let homePage = (
+    return (
+        <Container>
+            {homePage}
             <Row>
-                <Col>
-                    <ListGroup horizontal>
-                        {headerMenu}
-                    </ListGroup>
-                </Col> 
+                <Switch>
+                    <Route exact path="/" component={Login}/>
+                    <Route exact path="/login" component={Login}/>
+                    <Route path="/register" component={Registration}/>
+                    <Route path="/user-list" component={isLoggin?UserList:Login}/>
+                    <Route path="/dashboard" component={isLoggin?UserHome:Login}/>
+                    <Route path="/my-profile" component={isLoggin?UserProfile:Login}/>
+                    <Route path="/profile/:id" component={isLoggin?UserProfile:Login}/>
+                    <Route component={NotFound} />
+                </Switch>
             </Row>
+        </Container> 
         );
-        let bodyContainer = <Login/>;
-
-
-        
-        switch(pageID){
-            case "register":
-                bodyContainer = <Registration />;
-                break;
-            case "list":
-                bodyContainer = <UserList />;
-                break;
-            case "my-profile":
-                bodyContainer = <UserProfile />;
-                break;    
-            default:
-                bodyContainer = <Login/>;
-                break;
-        }    
-
-        return (
-            <Container>
-                {homePage}
-                <Row>
-                    {bodyContainer}
-                </Row>
-            </Container> 
-            );
-    }
+    
 }
 
+function NotFound(){
+    return(
+        <div>Oops! Page not found 404!</div>
+    );
+}
 export default Home

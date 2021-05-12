@@ -1,13 +1,15 @@
 import React,{ useState,useRef,useEffect }  from 'react'
 import {Form,Button,Alert,Table,Container,Row,Col,Modal,Card,Image} from 'react-bootstrap';
 import {useSelector,useDispatch} from 'react-redux';
-import {callLogout,callLogin} from '../store/reducers';
+import {callLogout} from '../store/reducers';
 // import thumbsUpLogoSolid from '../images/thumbs-up-solid.svg';
 // import commentLogoSolid from '../images/comment-solid.svg';
 import thumbsUpLogo from '../images/thumbs-up-regular.svg';
 import commentLogo from '../images/comment-regular.svg';
+import {useParams,useHistory } from 'react-router-dom'
 
-function UserHome(props){
+export function UserHome(props){
+    
     let [isListLoaded,setIsListLoaded] = useState(false)
     let [usersFeed,setUsersFeed] = useState(null)
 
@@ -45,7 +47,7 @@ function UserHome(props){
                 <Col xs={10}>
                     {isListLoaded && usersFeed !== null?<>{
                             usersFeed.map(feed => (
-                                <UserFeed userInfo={feed}/>
+                                <UserFeed userInfo={feed} key={feed.id}/>
                             ))  
                         }</>:"Loading"
                     }
@@ -56,6 +58,8 @@ function UserHome(props){
 }
 
 export function UserProfile(props){
+    let history = useHistory();
+    let {id}  = useParams();
     let inputFieldComponent = {
         value :null,
         isValid : true,
@@ -65,17 +69,54 @@ export function UserProfile(props){
     const dispatch = useDispatch();
     const userDetails = useSelector((state) => state.checkUserLogin);
     const [isEditable,setIsEditable] = useState(false);
-    let [nameData, setNameData] = useState(inputFieldComponent = {value:userDetails.name,isValid : true,errorMessage : ""});
-    let [phoneData, setPhoneData] = useState(inputFieldComponent = {value:userDetails.phone,isValid : true,errorMessage : ""});
+    let [nameData, setNameData] = useState(inputFieldComponent);
+    let [emailData, setEmailData] = useState(inputFieldComponent);
+    let [phoneData, setPhoneData] = useState(inputFieldComponent);
     let [isShowAlertMessage, setIsShowAlertMessage] = useState(false);
     let [responseData,setResponseData] = useState('');
     let [alertVariant,setAlertVariant] = useState(false);
     let [showChangePasswordModal,setShowChangePasswordModal] = useState(false);
-    let [profileImage,setProfileImage] = useState(inputFieldComponent);
+    let [profileImage,setProfileImage] = useState({
+        value :'',
+        binaryString:null,
+        isValid : true,
+        errorMessage : ''
+    });
+    let [isLoading,setIsloading] = useState(false)
 
     const clickLogout = () => {
         dispatch(callLogout());
+        history.push("/");
     }
+
+    useEffect(() =>{
+        if(isLoading){
+            return
+        }
+        let isStatusOK = false;
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' }
+        };
+        let userID  = id?id:userDetails.id;
+        fetch('http://localhost:8000/user-detail/'+userID, requestOptions)
+            .then((response) => {
+                const data = response.json()
+                if(response.status === 200){
+                    isStatusOK = true
+                }  
+                return data   
+            })
+            .then((data) => {
+                if (isStatusOK){
+                    setIsloading(true)
+                    setNameData({ value :data.content.name,isValid : true,errorMessage : ''})
+                    setEmailData({ value :data.content.email,isValid : true,errorMessage : ''})
+                    setPhoneData({ value :data.content.phone,isValid : true,errorMessage : ''})
+                    setProfileImage({ value :data.content.profileImage,isValid : true,errorMessage : ''})
+                } 
+            });
+    })
 
     const checkValueType = (e) => {
         var numberPattern = new RegExp(/^[0-9]+$/i);
@@ -101,14 +142,14 @@ export function UserProfile(props){
             reader.readAsBinaryString(e.target.files[0])
             
         } 
-        console.log(e.target.files[0]);
         
     }
     
     const _handleReaderLoaded = (readerEvt) => {
         let binaryString = readerEvt.target.result;
         let  inputFieldComponent = {
-            value :btoa(binaryString),
+            value :profileImage.value,
+            binaryString:btoa(binaryString),
             isValid : true,
             errorMessage : ''
         };
@@ -139,9 +180,10 @@ export function UserProfile(props){
                 body: JSON.stringify({ 
                     name:  nameData.value,
                     phone:  phoneData.value,
-                    profileImage:  profileImage.value,
+                    profileImage:  profileImage.binaryString,
                 })
             };
+            
             fetch('http://localhost:8000/update-detail/'+userDetails.id, requestOptions)
                 .then((response) => {
                     if(response.status === 200){
@@ -154,19 +196,11 @@ export function UserProfile(props){
                         setIsShowAlertMessage(true);
                         setResponseData(data.content);
                         setAlertVariant("success");
-                        dispatch(callLogin({
-                            name:nameData.value,
-                            email:userDetails.email,
-                            id:userDetails.id,
-                            phone:phoneData.value,
-                            profileImage:nameData.value+".jpg"
-                        }))
                     }else{
                         setIsShowAlertMessage(true);
                         setResponseData(data.error);
                         setAlertVariant("danger");
                     }
-                    
                 });
         }
     }
@@ -177,15 +211,24 @@ export function UserProfile(props){
         setProfileImage({value:null,isValid : true});    
         setIsEditable(status);
         setIsShowAlertMessage(false);
+        setIsloading(false)
     }
 
     return(
         <>
             <Container style={{marginTop:'5px'}}>
+            {id?
                 <Row>
-                    <Col xs={9}><h1>My Profile</h1></Col>
-                    <Col xs={3}><Button variant="secondary" onClick={clickLogout} block>Logout</Button></Col>
+                    <Col xs={9}><h1>Profile</h1></Col>
+                    <Col xs={3}><Button variant="secondary" onClick={() => history.push("/user-list")} block>Back</Button></Col>
                 </Row>
+                :
+                <Row>
+                <Col xs={9}><h1>My Profile</h1></Col>
+                <Col xs={3}><Button variant="secondary" onClick={clickLogout} block>Logout</Button></Col>
+            </Row>
+                
+                }
                 <Row>
                     <Col xs={12}>
                         <Alert show={isShowAlertMessage} variant={alertVariant} onClose={() => setIsShowAlertMessage(false)}  dismissible>{responseData}</Alert>
@@ -193,31 +236,32 @@ export function UserProfile(props){
                         <tbody>
                             <tr>
                                 <td>Name :</td>
-                                <td>{isEditable? <><Form.Control type="text" name="name" value={nameData.value} onChange={(e) => handleUserDetails(e)} /> <ValidationError filedInfo={nameData}/></>:userDetails.name}</td>
+                                <td>{isEditable? <><Form.Control type="text" name="name" value={nameData.value} onChange={(e) => handleUserDetails(e)} /> <ValidationError filedInfo={nameData}/></>:nameData.value}</td>
                             </tr>
                             <tr>
                                 <td>Email :</td>
-                                <td>{userDetails.email}</td>
+                                <td>{emailData.value}</td>
                             </tr>
                             <tr>
                                 <td>Phone :</td>
-                                <td>{isEditable? <><Form.Control type="text" name="phone" value={phoneData.value} onChange={(e) => handleUserDetails(e)} onKeyDown={(e) => checkValueType(e)} /> <ValidationError filedInfo={phoneData}/></>:userDetails.phone}</td>
+                                <td>{isEditable? <><Form.Control type="text" name="phone" value={phoneData.value} onChange={(e) => handleUserDetails(e)} onKeyDown={(e) => checkValueType(e)} /> <ValidationError filedInfo={phoneData}/></>:phoneData.value}</td>
                             </tr>
 
                             <tr>
                                 <td>Profile Image :</td>
-                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  /></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/"+userDetails.profileImage} thumbnail />}</td>
+                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  /></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/"+profileImage.value} thumbnail />}</td>
                             </tr>
                         </tbody>
                     </Table>
                     </Col>
                 </Row>
+                {!id&&
                 <Row>
                     <Col xs={6} md={3}><Button variant="info" block onClick={() => editUserDetails(!isEditable)}>{isEditable ?"Back":"Edit Profile"}</Button></Col>
                     {isEditable && <Col xs={6} md={3}><Button variant="success " block onClick={() => updateUserDetails()}>Submit</Button></Col>}
                     {!isEditable && <Col xs={6} md={3}><Button variant="info " block onClick={() => setShowChangePasswordModal(true)}>Change Password</Button></Col>}
                 </Row>
-
+                }
                 <ChangePasswordModal userID={userDetails.id} show={showChangePasswordModal} onHide={() => setShowChangePasswordModal(false)}/>
             </Container>
         </>
@@ -311,7 +355,7 @@ function ChangePasswordModal(props) {
                         <Form.Label>New Password:</Form.Label>
                     </Form.Group>
                     <Form.Group as={Col} xs={6} controlId="password-input">
-                        <Form.Control type="password" name="password" placeholder="Enter Password" value={password.value} onChange={(e) => setFormValue(e)} style={{'border-color':(!password.error?"":"red")}}/>
+                        <Form.Control type="password" name="password" placeholder="Enter Password" value={password.value} onChange={(e) => setFormValue(e)} style={{borderColor:(!password.error?"":"red")}}/>
                         <Form.Text>{password.error && <label style={{color:'red'}}>{password.error}</label>}</Form.Text>
                     </Form.Group>
                 </Form.Row>
@@ -358,7 +402,7 @@ function UserFeed(props){
                 Some quick example text to build on the card title and make up the bulk of
                 the card's content.
                 </Card.Text>
-                <Card.Img variant="top" height="250" src={"https://picsum.photos/1000/1000?"+props.userInfo.id} thumbnail />
+                <Card.Img className="img-thumbnail" variant="top" height="250" src={"https://picsum.photos/1000/1000?"+props.userInfo.id} />
             </Card.Body>
             <Card.Footer>
                 <Row>

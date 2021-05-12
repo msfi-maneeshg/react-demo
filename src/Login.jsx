@@ -4,8 +4,12 @@ import {useSelector,useDispatch} from 'react-redux';
 import {callLogin} from './store/reducers';
 import UserHome from './user/Home';
 
+import {useHistory} from "react-router-dom";
+
 function LoginPage() {   
+    let history = useHistory();
     const dispatch = useDispatch();
+    const loginStatus = useSelector((state) => state.checkUserLogin);
     let inputFieldComponent = {
         value :"",
         isValid : true,
@@ -17,8 +21,6 @@ function LoginPage() {
     let [isSubmitting, setIsSubmitting] = useState(false);
     let [responseData,setResponseData] = useState('');
     // let [isStatusOK,setIsStatusOK] = useState(false);
-    
-
       let setFormValue = (e) =>{
        let inputFieldComponent = {
             value :e.target.value,
@@ -32,13 +34,11 @@ function LoginPage() {
         }
     }
      
-    
     let closeAlertMessage = () =>{
        setIsShowAlertMessage(false);
     }
     let submitLoginDetails = (e) =>{
         setIsSubmitting(true);
-        console.log("isSubmitting",isSubmitting)
         let validation = true
         
         //-------- Email validation
@@ -80,6 +80,9 @@ function LoginPage() {
                 .then((data) => {
                     if (isStatusOK){
                         dispatch(callLogin(data.content));
+                        if(loginStatus.isLogin){
+                            history.push("dashboard");
+                        }
                         //----set data here after loggedin
                     }else{
                         setIsShowAlertMessage(true);
@@ -93,7 +96,6 @@ function LoginPage() {
       
         e.preventDefault();
     }
-
     return(
         <>
             <h1>Login Page</h1>

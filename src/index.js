@@ -5,11 +5,14 @@ import Home from './Home';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
+import {  BrowserRouter } from 'react-router-dom'
 store.subscribe(getWelcomeMessage);
 function getWelcomeMessage(){
   ReactDOM.render(
       <Provider store={store}>
-        <Home/>
+        <BrowserRouter>
+          <Home />
+        </BrowserRouter>
       </Provider>,
     document.getElementById('root')
   );

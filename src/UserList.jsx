@@ -76,7 +76,7 @@ function UserInfo(props) {
     return(<Container>
             {props.userList.map(userInfo => (
                 <Row className="user-list-row" key={userInfo.id}>
-                    <Col className="profile-image" xs={2} md={2} ><Image width="50" src={"http://localhost:8000/image/"+userInfo.profileImage} thumbnail /></Col>
+                    <Col className="profile-image" xs={2} md={2} ><Image width="50" src={"http://localhost:8000/image/profile/"+userInfo.profileImage} thumbnail /></Col>
                     <Col className="info" xs={6} md={6} >
                         <span>{userInfo.name}</span>
                         <span>{userInfo.email}</span>

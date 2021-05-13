@@ -13,30 +13,34 @@ export function UserHome(props){
     
     let [isListLoaded,setIsListLoaded] = useState(false)
     let [usersFeed,setUsersFeed] = useState(null)
+    let [error,setError] = useState("")
 
 
     useEffect(() =>{
         if(isListLoaded){
             return
         }
-        let isStatusOK = false;
+        let isStatusOK;
         const requestOptions = {
             method: 'GET',
             headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' }
         };
-        fetch('http://localhost:8000/user-list', requestOptions)
+        fetch('http://localhost:8000/get-post', requestOptions)
             .then((response) => {
                 const data = response.json()
-                if(response.status === 200){
-                    isStatusOK = true
-                }  
+                isStatusOK = response.status
+                
                 return data   
             })
             .then((data) => {
-                if (isStatusOK){
-                    setIsListLoaded(true)
+                if (isStatusOK === 200){
                     setUsersFeed(data.content)
-                } 
+                }else if (isStatusOK === 204){
+                    setError(data.error)
+                }else{
+                    setError("Something went wronge!")
+                }
+                setIsListLoaded(true)
             });
     })
 
@@ -55,7 +59,7 @@ export function UserHome(props){
                     <AddNewPost/>
                 </Col>
                 <Col xs={10}>
-                    { (isListLoaded && usersFeed !== null)?allUserFeed:<span>Loading...</span>}
+                    { (isListLoaded && usersFeed !== null)?allUserFeed:<span>{error?error:"Loading..."}</span>}
                 </Col>
             </Row>
         </Container>
@@ -257,7 +261,7 @@ export function UserProfile(props){
 
                             <tr>
                                 <td>Profile Image :</td>
-                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  custom label={profileInputName?profileInputName:"Select New Image"}/></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/"+profileImage.value} thumbnail />}</td>
+                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  custom label={profileInputName?profileInputName:"Select New Image"}/></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/profile/"+profileImage.value} thumbnail />}</td>
                             </tr>
                         </tbody>
                     </Table>
@@ -397,7 +401,7 @@ function UserFeed(props){
             <Card.Header >
                 <Row>
                     <Col xs={2} md={2} >
-                        <Image width="50" src={"http://localhost:8000/image/"+props.userInfo.profileImage} roundedCircle />
+                        <Image width="50" src={"http://localhost:8000/image/profile/"+props.userInfo.profileImage} roundedCircle />
                     </Col>
                     <Col xs={6} md={6} >
                         <h1>{props.userInfo.name}</h1>
@@ -405,11 +409,8 @@ function UserFeed(props){
                 </Row>
             </Card.Header>
             <Card.Body>
-                <Card.Text>
-                Some quick example text to build on the card title and make up the bulk of
-                the card's content.
-                </Card.Text>
-                <Card.Img className="img-thumbnail" variant="top" height="50" src={"https://picsum.photos/100/100?"+props.userInfo.id} />
+                {props.userInfo.content && <Card.Text>{props.userInfo.content}</Card.Text>}
+                {props.userInfo.image && <Card.Img className="img-thumbnail" variant="top" height="50" src={"http://localhost:8000/image/post/"+props.userInfo.image} />}
             </Card.Body>
             <Card.Footer>
                 <Row>

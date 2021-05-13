@@ -14,7 +14,7 @@ export function UserHome(props){
     let [isListLoaded,setIsListLoaded] = useState(false)
     let [usersFeed,setUsersFeed] = useState(null)
     let [error,setError] = useState("")
-
+    let firstLoad = false;
 
     useEffect(() =>{
         if(isListLoaded){
@@ -42,6 +42,8 @@ export function UserHome(props){
                 }
                 setIsListLoaded(true)
             });
+
+            firstLoad = true;    
     })
 
     let allUserFeed;
@@ -56,10 +58,10 @@ export function UserHome(props){
         <Container className="post-main">
             <Row className="justify-content-center post-row">
                 <Col xs={10}>
-                    <AddNewPost/>
+                    <AddNewPost onChange={() => setIsListLoaded(false)}/>
                 </Col>
                 <Col xs={10}>
-                    { (isListLoaded && usersFeed !== null)?allUserFeed:<span>{error?error:"Loading..."}</span>}
+                    { (isListLoaded && usersFeed !== null)?allUserFeed:<span>{error && firstLoad?error:"Loading..."}</span>}
                 </Col>
             </Row>
         </Container>
@@ -261,7 +263,7 @@ export function UserProfile(props){
 
                             <tr>
                                 <td>Profile Image :</td>
-                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  custom label={profileInputName?profileInputName:"Select New Image"}/></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/profile/"+profileImage.value} thumbnail />}</td>
+                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  custom label={profileInputName?profileInputName:"Select New Image"}/></>:<Image width="100" height="100" src={"http://localhost:8000/image/profile/"+profileImage.value} thumbnail />}</td>
                             </tr>
                         </tbody>
                     </Table>
@@ -375,7 +377,7 @@ function ChangePasswordModal(props) {
                         <Form.Label>Confirm Password:</Form.Label>
                     </Form.Group>
                     <Form.Group as={Col} xs={6} controlId="confirm-password-input">
-                        <Form.Control type="password" name="confirmPassword" placeholder="Re-enter Password" value={confirmPassword.value} onChange={(e) => setFormValue(e)} style={{'border-color':(!confirmPassword.error?"":"red")}}/>
+                        <Form.Control type="password" name="confirmPassword" placeholder="Re-enter Password" value={confirmPassword.value} onChange={(e) => setFormValue(e)} style={{borderColor:(!confirmPassword.error?"":"red")}}/>
                         <Form.Text>{confirmPassword.error && <label style={{color:'red'}}>{confirmPassword.error}</label>}</Form.Text>
                     </Form.Group>
                 </Form.Row>
@@ -460,7 +462,6 @@ function AddNewPost(props){
                 return data   
             })
             .then((data) => {
-                
                 if (isStatusOK){
                     setIsUserProfileLoaded(true)
                     setUserProfile(data.content)
@@ -502,6 +503,7 @@ function AddNewPost(props){
                         setPostContent("");
                         setPostImage("");
                         addNewPost.current.reset();
+                        props.onChange()
                     }else{
                         setPostError({color:"red",message:data.error})
                     }

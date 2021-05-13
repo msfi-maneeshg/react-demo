@@ -65,7 +65,9 @@ function Home (){
 
 function NotFound(){
     return(
-        <div>Oops! Page not found 404!</div>
+        <div>
+            <h1>Oops! Page not found 404</h1>
+        </div>
     );
 }
 export default Home

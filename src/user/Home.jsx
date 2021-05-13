@@ -7,6 +7,7 @@ import {callLogout} from '../store/reducers';
 import thumbsUpLogo from '../images/thumbs-up-regular.svg';
 import commentLogo from '../images/comment-regular.svg';
 import {useParams,useHistory } from 'react-router-dom'
+import  '../style.css';
 
 export function UserHome(props){
     
@@ -39,18 +40,22 @@ export function UserHome(props){
             });
     })
 
+    let allUserFeed;
+    if(usersFeed !== null){
+        allUserFeed = usersFeed.map(feed => (
+            <UserFeed userInfo={feed} key={feed.id}/>
+        ))  
+    }
     
 
     return(
-        <Container>
-            <Row className="justify-content-center">
+        <Container className="post-main">
+            <Row className="justify-content-center post-row">
                 <Col xs={10}>
-                    {isListLoaded && usersFeed !== null?<>{
-                            usersFeed.map(feed => (
-                                <UserFeed userInfo={feed} key={feed.id}/>
-                            ))  
-                        }</>:"Loading"
-                    }
+                    <AddNewPost/>
+                </Col>
+                <Col xs={10}>
+                    { (isListLoaded && usersFeed !== null)?allUserFeed:<span>Loading...</span>}
                 </Col>
             </Row>
         </Container>
@@ -83,13 +88,14 @@ export function UserProfile(props){
         errorMessage : ''
     });
     let [isLoading,setIsloading] = useState(false)
+    let [profileInputName,setProfileInputName] = useState("")
 
     const clickLogout = () => {
         dispatch(callLogout());
         history.push("/");
     }
 
-    useEffect(() =>{
+    useEffect(() =>{ 
         if(isLoading){
             return
         }
@@ -137,9 +143,11 @@ export function UserProfile(props){
         }else if (e.target.name === 'phone' && inputFieldComponent.value.length <= 10){
             setPhoneData(inputFieldComponent);
         } else if (e.target.name === 'profileImage'){
-            const reader = new FileReader();
-            reader.onload = _handleReaderLoaded
-            reader.readAsBinaryString(e.target.files[0])
+            
+            setProfileInputName(e.target.files[0].name)
+            const profileReader = new FileReader();
+            profileReader.onload = _handleReaderLoaded
+            profileReader.readAsBinaryString(e.target.files[0])
             
         } 
         
@@ -249,7 +257,7 @@ export function UserProfile(props){
 
                             <tr>
                                 <td>Profile Image :</td>
-                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  /></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/"+profileImage.value} thumbnail />}</td>
+                                <td>{isEditable? <><Form.File name="profileImage" onChange={(e) => handleUserDetails(e)}  custom label={profileInputName?profileInputName:"Select New Image"}/></>:<Image width="100" height="100" alt="" src={"http://localhost:8000/image/"+profileImage.value} thumbnail />}</td>
                             </tr>
                         </tbody>
                     </Table>
@@ -310,7 +318,6 @@ function ChangePasswordModal(props) {
             
             //-------- sending post request change password
             const data = new FormData(changePasswordform.current)
-            console.log(data);
             const requestOptions = {
                 method: 'UPDATE',
                 headers: { 'Content-Disposition':'form-data','Access-Control-Allow-Origin':'*' },
@@ -386,7 +393,7 @@ function ValidationError(props){
 
 function UserFeed(props){
     return(
-        <Card style={{margin:"5px"}}>
+        <Card style={{margin:"5px" }}>
             <Card.Header >
                 <Row>
                     <Col xs={2} md={2} >
@@ -402,7 +409,7 @@ function UserFeed(props){
                 Some quick example text to build on the card title and make up the bulk of
                 the card's content.
                 </Card.Text>
-                <Card.Img className="img-thumbnail" variant="top" height="250" src={"https://picsum.photos/1000/1000?"+props.userInfo.id} />
+                <Card.Img className="img-thumbnail" variant="top" height="50" src={"https://picsum.photos/100/100?"+props.userInfo.id} />
             </Card.Body>
             <Card.Footer>
                 <Row>
@@ -416,6 +423,135 @@ function UserFeed(props){
             </Card.Footer>
         </Card>
     );
+}
+
+function AddNewPost(props){
+    const loggedinUser = useSelector((state) => state.checkUserLogin);
+    let [isUserProfileLoaded,setIsUserProfileLoaded] = useState(false)
+    let [userProfile,setUserProfile] = useState(null)
+    let [postImage,setPostImage] = useState(null)
+    let [postContent,setPostContent] = useState(null)
+    let [postButton,setPostButton] = useState(false)
+    let [postError,setPostError] = useState({color:"",message:""})
+
+
+    const addNewPost = useRef(null)
+    useEffect(() => {
+        if(postError.message){
+            setInterval(() =>setPostError({color:"",message:""}),5000);
+        }
+        if(isUserProfileLoaded){
+            return
+        }
+
+        var isStatusOK = false;
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*' }
+        };
+        
+        fetch('http://localhost:8000/user-detail/'+loggedinUser.id, requestOptions)
+            .then((response) => {
+                const data = response.json()
+                if(response.status === 200){
+                    isStatusOK = true
+                }  
+                return data   
+            })
+            .then((data) => {
+                
+                if (isStatusOK){
+                    setIsUserProfileLoaded(true)
+                    setUserProfile(data.content)
+                } 
+                
+            });
+    })
+
+    const handleForm = (e) => {
+        if(e.target.name === "postContent"){
+            setPostContent(e.target.value)
+        }else if(e.target.name === "postImage"){
+            if(e.target.files["length"]>0){
+                setPostImage(e.target.files[0].name)
+            }
+        }
+    }
+
+    const submitNewPost = (e) =>{
+        if(postContent || postImage){
+            var isStatusOK = false;
+            const newPostData = new FormData(addNewPost.current)
+
+            setPostButton(true)    
+            const requestOptions = {
+                method: 'POST',
+                body: newPostData
+            };
+            fetch('http://localhost:8000/add-post/'+loggedinUser.id, requestOptions)
+                .then((response) => {
+                    if(response.status === 200){
+                        isStatusOK = true;
+                    }
+                    return response.json();   
+                })
+                .then((data) => {
+                    if (isStatusOK){
+                        setPostError({color:"green",message:data.content});
+                        setPostContent("");
+                        setPostImage("");
+                        addNewPost.current.reset();
+                    }else{
+                        setPostError({color:"red",message:data.error})
+                    }
+                    setPostButton(false)  
+                }); 
+              
+        }
+        e.preventDefault()
+    }
+
+    let newFeed ;
+    if(userProfile){
+        newFeed  = (
+            <Card style={{margin:"5px" }}>
+                <Card.Header >
+                    <Row>
+                        <Col xs={12} md={12} >
+                           <h3>Add Post</h3>
+                        </Col>
+                        <Col xs={12} md={12} >
+                            <span style={{color:postError.color}}>{postError.message}</span>
+                        </Col>
+                    </Row>
+                </Card.Header>
+                <Card.Body>
+                    <Form ref={addNewPost} onSubmit={(e) => submitNewPost(e)}>
+                        <Form.Group controlId="newPost.content">
+                            <Form.Control as="textarea" name="postContent" value={postContent} rows={3} onChange={(e) => handleForm(e)} />
+                        </Form.Group>
+                        <Form.Group controlId="newPost.photo">
+                            <Form.File id="formcheck-api-custom"  custom >
+                                <Form.File.Input name="postImage" isValid onChange={(e) => handleForm(e)} />
+                                <Form.File.Label data-browse="Add Photo">
+                                    {postImage?postImage:"Browse..."}
+                                </Form.File.Label>
+                            </Form.File>
+                        </Form.Group>
+                        <Form.Group controlId="newPost.button">
+                            <Button type="submit" block disabled={!(postContent || postImage) || postButton}>{postButton?"Posting...":"Post"}</Button>
+                        </Form.Group>
+                    </Form>
+                </Card.Body>
+            </Card>
+        )
+    }
+    return(
+        <>
+        {isUserProfileLoaded && newFeed?newFeed:<span>Loading...</span>}
+        </>
+    );
+
 }
 
 export default UserHome;

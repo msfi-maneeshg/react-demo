@@ -1,6 +1,6 @@
 import React from 'react'
 import {Container,Row,Col,Image} from 'react-bootstrap';
-import {} from './style.css';
+import  './style.css';
 import {useHistory} from 'react-router-dom'
 class UserList extends React.Component{
 

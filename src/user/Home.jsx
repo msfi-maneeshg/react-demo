@@ -14,7 +14,7 @@ export function UserHome(props){
     let [isListLoaded,setIsListLoaded] = useState(false)
     let [usersFeed,setUsersFeed] = useState(null)
     let [error,setError] = useState("")
-    let firstLoad = false;
+    let [firstLoad,setFirstLoad] = useState(false)
 
     useEffect(() =>{
         if(isListLoaded){
@@ -41,9 +41,10 @@ export function UserHome(props){
                     setError("Something went wronge!")
                 }
                 setIsListLoaded(true)
+                setFirstLoad(true)   
             });
 
-            firstLoad = true;    
+             
     })
 
     let allUserFeed;
